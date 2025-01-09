@@ -5,53 +5,17 @@
  *      Author: User
  */
 #include "USART_interface.h"
-#include "../MCAL/RCC/RCC_interface.h"
-#include "../../Inc/Bit_Operations.h"
-#include "../../Inc/F4_Registers.h"
-#include "../../Inc/ErrorTypes.h"
 
 static USART_Reg_t* USART[6] = {USART1, USART2, USART3, UART4, UART5, USART6};
 
 #define APB1       1
 #define APB2       2
-#define HSE_VALUE  3    // Must be replaced with the actual HSE frequency used in the system
-#define PLL_VALUE  4   // Will be Calculated in RCC driver, then edited here
+  /* Must be replaced with the actual HSE, PLL frequencies used in the system */
+#define HSE_VALUE  3
+#define PLL_VALUE  4
 
 uint32_t Fclk;
-
-uint32_t GetClockFrequency(uint8_t UART_BUS){
-
-	const uint32_t AHBPrescTable[16] = { 1, 1, 1, 1, 1, 1, 1, 1, 2, 4, 8, 16, 64, 128, 256, 512 };
-	const uint8_t APBPrescTable[8] = { 1, 1, 1, 1, 2, 4, 8, 16};   // 4 states for no division
-	uint32_t SysClk_Source = ((RCC->CFGR >> 2) & 0x3);   // Extract bits 3:2 to get the current SysClock source
-	uint32_t SysClk_freq = 0;
-	switch (SysClk_Source){
-
-	     case 0x0: //HSI
-	     	SysClk_freq = 16000000;  // 16 MHz
-		    break;
-	    case 0x1:  // HSE
-	    	SysClk_freq = HSE_VALUE;
-		    break;
-	    case 0x2:  // PLL
-	    	SysClk_freq = PLL_VALUE;
-		    break;
-	}
-	uint32_t ahb_prescaler = ((RCC->CFGR >> HPRE0) & 0xF);
-	uint32_t ahb_div = AHBPrescTable[ahb_prescaler];
-
-	if (UART_BUS == APB1){  /* Get clock frequency in case of ABP1 bus*/
-		uint32_t apb1_prescaler = ((RCC->CFGR >> PPRE10) & 0x7);
-		uint32_t apb1_div = APBPrescTable[apb1_prescaler];
-		Fclk = (SysClk_freq / ahb_div / apb1_div);
-	}
-	else { 	/* APB2 Bus */
-		uint32_t apb2_prescaler = ((RCC->CFGR >> PPRE20) & 0x7);
-		uint32_t apb2_div = APBPrescTable[apb2_prescaler];
-		Fclk = (SysClk_freq / ahb_div / apb2_div);
-	}
-	return Fclk;
-}
+static uint32_t GetClockFrequency(uint8_t UART_BUS);
 
 uint8_t USART_Init(const USART_Config_t* USART_Config){
 	uint8_t Local_ErrorStatus = OK;
@@ -207,4 +171,38 @@ uint8_t USART_DMAEnable(USART_index usartx){
 		return ERROR;
 	}
 	return OK;
+}
+
+static uint32_t GetClockFrequency(uint8_t UART_BUS){
+
+	const uint32_t AHBPrescTable[16] = { 1, 1, 1, 1, 1, 1, 1, 1, 2, 4, 8, 16, 64, 128, 256, 512 };
+	const uint8_t APBPrescTable[8] = { 1, 1, 1, 1, 2, 4, 8, 16};   // 4 states for no division
+	uint32_t SysClk_Source = ((RCC->CFGR >> 2) & 0x3);   // Extract bits 3:2 to get the current SysClock source
+	uint32_t SysClk_freq = 0;
+	switch (SysClk_Source){
+
+	     case 0x0: //HSI
+	     	SysClk_freq = 16000000;  // 16 MHz
+		    break;
+	    case 0x1:  // HSE
+	    	SysClk_freq = HSE_VALUE;
+		    break;
+	    case 0x2:  // PLL
+	    	SysClk_freq = PLL_VALUE;
+		    break;
+	}
+	uint32_t ahb_prescaler = ((RCC->CFGR >> HPRE0) & 0xF);
+	uint32_t ahb_div = AHBPrescTable[ahb_prescaler];
+
+	if (UART_BUS == APB1){  /* Get clock frequency in case of ABP1 bus*/
+		uint32_t apb1_prescaler = ((RCC->CFGR >> PPRE10) & 0x7);
+		uint32_t apb1_div = APBPrescTable[apb1_prescaler];
+		Fclk = (SysClk_freq / ahb_div / apb1_div);
+	}
+	else { 	/* APB2 Bus */
+		uint32_t apb2_prescaler = ((RCC->CFGR >> PPRE20) & 0x7);
+		uint32_t apb2_div = APBPrescTable[apb2_prescaler];
+		Fclk = (SysClk_freq / ahb_div / apb2_div);
+	}
+	return Fclk;
 }

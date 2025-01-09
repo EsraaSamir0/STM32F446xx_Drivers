@@ -8,7 +8,7 @@
 #include "EXTI_private.h"
 
 
-void (*EXTI_CallBackFunc[EXTI_LINES_NUM])(void) = {0}; /* Array of pointers to call back functions */
+void (*EXTI_CallBackFunc[EXTI_LINES_NUM])(void) = {0}; /* Array of pointers to callback functions */
 
 
 uint8_t EXTI_Init(EXTI_Config_t* EXTI_Config){
@@ -101,6 +101,8 @@ uint8_t EXTI_SetCallBack(EXTI_Line_t EXTI_LINE, void (*CallBackFunc)(void)){
 	}
 	return OK;
 }
+
+/************************** Handlers Section ***************************/
 
 void EXTI0_IRQHandler (void){
 	/*Clear pending flag*/

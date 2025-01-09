@@ -7,9 +7,12 @@
 
 #ifndef USART_USART_INTERFACE_H_
 #define USART_USART_INTERFACE_H_
-
 #include <stdio.h>
 #include <stdint.h>
+#include "../../Inc/ErrorTypes.h"
+#include "../../Inc/F4_Registers.h"
+#include "../../Inc/Bit_Operations.h"
+#include "../MCAL/RCC/RCC_interface.h"
 
 #define HW_FLOWCONTROL_MASK     0xFFFFFCFF
 #define USART_DMA_MASK         0xFFFFFF3F

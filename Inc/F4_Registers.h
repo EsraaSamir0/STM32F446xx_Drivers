@@ -55,7 +55,7 @@
 #define TIM8_BASE_ADDRESS             0x40010400U
 #define USART1_BASE_ADDRESS           0x40011000U
 #define USART6_BASE_ADDRESS           0x40011400U
-#define ADCs_BASE_ADDRESS             0x40012000U
+#define ADC_BASE_ADDRESS              0x40012000U
 #define SDMMC_BASE_ADDRESS            0x40012C00U
 #define SPI1_BASE_ADDRESS             0x40013000U
 #define SPI4_BASE_ADDRESS             0x40013400U
@@ -174,6 +174,40 @@ typedef struct {
 	volatile uint32_t CFGR;                       /* SYSCFG configuration Register */
 }SYSCFG_Reg_t;
 
+
+/****************************   DMA Register Definition Structure   *****************************/
+
+
+typedef struct {
+	volatile uint32_t SCR;                /* Stream configuration register */
+	volatile uint32_t SNDTR;              /* Stream number of data register */
+	volatile uint32_t SPAR;               /* Stream peripheral address register */
+	volatile uint32_t SM0AR;              /* Stream memory 0 address register */
+	volatile uint32_t SM1AR;              /* Stream memory 1 address register */
+	volatile uint32_t SFCR;               /* Stream FIFO control register */
+}DMA_Stream_Reg;
+
+typedef struct {
+	volatile uint32_t ISR[2];                /* Interrupt status register */
+	volatile uint32_t IFCR[2];               /* Interrupt flag clear register */
+	volatile DMA_Stream_Reg Stream[8];
+}DMA_Reg_t;
+
+#define DMA1        (DMA_Reg_t*)(DMA1_BASE_ADDRESS)
+#define DMA2        (DMA_Reg_t*)(DMA2_BASE_ADDRESS)
+
+/* stream configuration register SCR pins */
+enum {
+	Stream_EN, DMEIE, DMA_TEIE, HTIE, DMA_TCIE, PFCTRL, DIR, CIRC = 8, PINC, MINC, PSIZE, MSIZE = 13,
+	PINCOS = 15, PL, DBM = 18, CT, PBURST = 21, MBURST = 23, CHSEL = 25
+};
+
+/* Stream FIFO control register SFCR pins */
+enum {
+	FTH, DMDIS = 2, FS, FEIE = 7
+};
+
+
 /**************************   RCC Register Definition Structure   ********************************/
 
 typedef struct {
@@ -248,7 +282,7 @@ typedef struct {
 
 /* SysTick control and status register CSR Pins  */
 enum {
-	ENABLE,TICKINT,CLKSOURCE,COUNTFLAG=16
+	ENABLE, TICKINT, CLKSOURCE, COUNTFLAG = 16
 };
 
 /**********************   USART Register Definition Structure   ***************************/
@@ -290,7 +324,6 @@ enum {
 	EIE, IREN, IRLP, HDSEL, NACK, SCEN, DMAR, DMAT, RTSE, CTSE, CTSIE, ONEBIT
 };
 
-
 /**************************   SPI Register Definition Structure   ***************************/
 
 typedef struct {
@@ -319,7 +352,6 @@ enum {
 enum {
 	RXDMAEN, TXDMAEN, SSOE, FRF = 4, ERRIE, SPI_RXNEIE, SPI_TXEIE
 };
-
 
 /**************************   I2C Register Definition Structure   ***************************/
 
@@ -369,7 +401,6 @@ enum {
 /* Status Register 2 pins */
 enum {
 	MSL, BUSY, TRA, GENCALL = 4, SMBDEFAULT, SMBHOST, DUALF, PEC0, PEC1, PEC2, PEC3, PEC4, PEC5, PEC6, PEC7
-
 };
 
 /* Clock control Register pins */
