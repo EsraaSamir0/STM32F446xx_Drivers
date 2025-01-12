@@ -14,6 +14,18 @@ uint8_t GPIO_PinInit(const PinConfig_t* PinConfig){
 		return NULL_PTR_ERR;
 	}
 	if (PinConfig->Port <= PORTH && PinConfig->PinNum <= PIN15){
+
+		/* Enable clock for the Port */
+		switch(PinConfig->Port){
+		case PORTA : RCC_AHB1EnableClk(GPIO_A);
+		case PORTB : RCC_AHB1EnableClk(GPIO_B);
+		case PORTC : RCC_AHB1EnableClk(GPIO_C);
+		case PORTD : RCC_AHB1EnableClk(GPIO_D);
+		case PORTE : RCC_AHB1EnableClk(GPIO_E);
+		case PORTF : RCC_AHB1EnableClk(GPIO_F);
+		case PORTG : RCC_AHB1EnableClk(GPIO_G);
+		case PORTH : RCC_AHB1EnableClk(GPIO_H);
+		}
 		/*Select Pin Mode*/
 		GPIO[PinConfig->Port]->MODER &= ~ (0b11 << PinConfig->PinNum*2);
 		GPIO[PinConfig->Port]->MODER |= ((PinConfig->Mode) << PinConfig->PinNum*2);

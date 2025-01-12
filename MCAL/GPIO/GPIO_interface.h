@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include "../../Inc/ErrorTypes.h"
 #include "../../Inc/F4_Registers.h"
+#include "../RCC/RCC_interface.h"
 
 typedef enum {
 	PORTA,
