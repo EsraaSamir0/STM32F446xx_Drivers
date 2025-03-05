@@ -10,19 +10,33 @@ static USART_Reg_t* USART[6] = {USART1, USART2, USART3, UART4, UART5, USART6};
 
 #define APB1       1
 #define APB2       2
-  /* Must be replaced with the actual HSE, PLL frequencies used in the system */
+
+/* Must be replaced with the actual HSE, PLL frequencies used in the system */
 #define HSE_VALUE  3
 #define PLL_VALUE  4
 
 uint32_t Fclk;
 static uint32_t GetClockFrequency(uint8_t UART_BUS);
+static void USART_ConfigurePins(USART_index usartx);
 
 uint8_t USART_Init(const USART_Config_t* USART_Config){
-	uint8_t Local_ErrorStatus = OK;
+
 	if (USART_Config == NULL){
 		return NULL_PTR_ERR;
 	}
 	if ((USART_Config->usartx >= usart1) && (USART_Config->usartx <= usart6) ){
+
+		USART_ConfigurePins(USART_Config->usartx);
+
+		/* Enable Clock for the peripheral */
+		switch (USART_Config->usartx){
+		case usart1 : RCC_APB2EnableClk(USART1_EN); break;
+		case usart2 : RCC_APB1EnableClk(USART2_EN); break;
+		case usart3 : RCC_APB1EnableClk(USART3_EN); break;
+		case uart4  : RCC_APB1EnableClk(UART4_EN);  break;
+		case uart5  : RCC_APB1EnableClk(UART5_EN);  break;
+		case usart6 : RCC_APB2EnableClk(USART6_EN); break;
+		}
 
 		/*Enable the USART peripheral */
 		USART[USART_Config->usartx]->CR1 |= (1 << UE);
@@ -76,9 +90,9 @@ uint8_t USART_Init(const USART_Config_t* USART_Config){
 		}
 	}
 	else {
-		Local_ErrorStatus = ERROR;
+		return ERROR;
 	}
-	return Local_ErrorStatus;
+	return OK;
 }
 
 uint8_t USART_SendData(USART_index usartx, uint8_t data){
@@ -172,6 +186,84 @@ uint8_t USART_DMAEnable(USART_index usartx){
 	}
 	return OK;
 }
+
+
+static void USART_ConfigurePins(USART_index usartx){
+
+	PinConfig_t USART_config;
+	USART_config.Mode = ALTER_FUNC;
+	USART_config.Speed = High_Speed;
+
+	switch (usartx){
+	case usart1 :
+		USART_config.Port = PORTA;
+		USART_config.AltFunc = AF7;
+		USART_config.PinNum = PIN10;
+		USART_config.PullType = PullUp;
+		GPIO_PinInit(&USART_config); // Rx
+		USART_config.PinNum = PIN9;
+		USART_config.Out_Type = PushPull;
+		USART_config.PullType = NO_PUPD;
+		GPIO_PinInit(&USART_config); // Tx
+		break;
+	case usart2 :
+		USART_config.Port = PORTA;
+		USART_config.AltFunc = AF7;
+		USART_config.PullType = PullUp;
+		USART_config.PinNum = PIN3;
+		GPIO_PinInit(&USART_config); // Rx
+		USART_config.PinNum = PIN2;
+		USART_config.Out_Type = PushPull;
+		USART_config.PullType = NO_PUPD;
+		GPIO_PinInit(&USART_config); // Tx
+		break;
+	case usart3 :
+		USART_config.Port = PORTB;
+		USART_config.AltFunc = AF7;
+		USART_config.PinNum = PIN11;
+		USART_config.PullType = PullUp;
+		GPIO_PinInit(&USART_config); // Rx
+		USART_config.PinNum = PIN10;
+		USART_config.Out_Type = PushPull;
+		USART_config.PullType = NO_PUPD;
+		GPIO_PinInit(&USART_config); // Tx
+		break;
+	case uart4 :
+		USART_config.Port = PORTA;
+		USART_config.AltFunc = AF8;
+		USART_config.PinNum = PIN1;
+		USART_config.PullType = PullUp;
+		GPIO_PinInit(&USART_config); // Rx
+		USART_config.PinNum = PIN0;
+		USART_config.Out_Type = PushPull;
+		USART_config.PullType = NO_PUPD;
+		GPIO_PinInit(&USART_config); // Tx
+		break;
+	case uart5 :
+		USART_config.Port = PORTE;
+		USART_config.AltFunc = AF8;
+		USART_config.PinNum = PIN7;
+		USART_config.PullType = PullUp;
+		GPIO_PinInit(&USART_config); // Rx
+		USART_config.PinNum = PIN8;
+		USART_config.Out_Type = PushPull;
+		USART_config.PullType = NO_PUPD;
+		GPIO_PinInit(&USART_config); // Tx
+		break;
+	case usart6 :
+		USART_config.Port = PORTC;
+		USART_config.AltFunc = AF8;
+		USART_config.PinNum = PIN7;
+		USART_config.PullType = PullUp;
+		GPIO_PinInit(&USART_config); // Rx
+		USART_config.PinNum = PIN6;
+		USART_config.Out_Type = PushPull;
+		USART_config.PullType = NO_PUPD;
+		GPIO_PinInit(&USART_config); // Tx
+		break;
+	}
+}
+
 
 static uint32_t GetClockFrequency(uint8_t UART_BUS){
 

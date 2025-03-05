@@ -285,6 +285,20 @@ enum {
 	ENABLE, TICKINT, CLKSOURCE, COUNTFLAG = 16
 };
 
+/************************   CAN Register Definition Structure   ***************************/
+
+typedef struct {
+
+
+
+
+
+
+
+
+}CAN_Reg_t;
+
+
 /**********************   USART Register Definition Structure   ***************************/
 
 typedef struct {

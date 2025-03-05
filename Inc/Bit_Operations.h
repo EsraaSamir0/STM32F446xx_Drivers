@@ -9,10 +9,13 @@
 #define BIT_OPERATIONS_H_
 #include <stdint.h>
 
-#define CLR_BIT(REG,BIT)   (REG &=~ (1<<BIT))
-#define SET_BIT(REG,BIT)   (REG|=(1<<BIT))
-#define GET_BIT(REG,BIT)   ((REG >> BIT) & 0x01)
-#define TOGGLE_BIT(REG,BIT) (REG ^= (1<<BIT))
+#define CLR_BIT(REG,BIT)       (REG &=~ (1<<BIT))
+#define SET_BIT(REG,BIT)       (REG |= (1<<BIT))
+#define GET_BIT(REG,BIT)       ((REG >> BIT) & 0x01)
+#define TOGGLE_BIT(REG,BIT)    (REG ^= (1<<BIT))
+
+#define CLEAR_REG(REG)         ((REG) = (0x0))
+#define WRITE_REG(REG, VAL)    ((REG) = (VAL))
 
 #define ALIAS_BASE       0x22000000U
 #define BITBAND_BASE     0x20000000U

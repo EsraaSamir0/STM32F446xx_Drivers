@@ -12,10 +12,11 @@
 #include "../../Inc/ErrorTypes.h"
 #include "../../Inc/F4_Registers.h"
 #include "../../Inc/Bit_Operations.h"
-#include "../MCAL/RCC/RCC_interface.h"
+#include "../RCC/RCC_interface.h"
+#include "../GPIO/GPIO_interface.h"
 
 #define HW_FLOWCONTROL_MASK     0xFFFFFCFF
-#define USART_DMA_MASK         0xFFFFFF3F
+#define USART_DMA_MASK          0xFFFFFF3F
 
 typedef enum {
 	usart1,
